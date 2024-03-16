@@ -5,6 +5,6 @@
         {
             "matchPackagePatterns": ["fabric-loom", "^net.fabricmc"],
             "enabled": false
-        },
+        }
     ]
 }
