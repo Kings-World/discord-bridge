@@ -1,0 +1,30 @@
+{
+    "schemaVersion": 1,
+    "id": "discord-bridge",
+    "version": "${version}",
+    "name": "Discord Bridge",
+    "description": "A bridge between Discord and Minecraft",
+    "authors": ["Seren_Modz 21"],
+    "contact": {
+        "homepage": "https://serenmodz.rocks",
+        "sources": "https://serenmodz.rocks",
+        "email": "seren@kings-world.net"
+    },
+    "license": "MIT",
+    "icon": "assets/icon.png",
+    "environment": "server",
+    "mixins": ["discord-bridge.mixins.json"],
+    "entrypoints": {
+        "main": [{
+            "adapter": "kotlin",
+            "value": "net.kings_world.discord_bridge.DiscordBridge"
+        }]
+    },
+    "depends": {
+        "fabricloader": ">=0.14.19",
+        "fabric-language-kotlin": ">=${fabric_kotlin_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=17"
+    }
+}
