@@ -16,9 +16,7 @@ import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.message.allowedMentions
 import dev.kord.rest.builder.message.create.WebhookMessageCreateBuilder
-import kotlinx.coroutines.launch
 import net.kings_world.discord_bridge.DiscordBridge.logger
-import net.kings_world.discord_bridge.DiscordBridge.scope
 import net.kings_world.discord_bridge.DiscordBridgeEvents
 import net.kings_world.discord_bridge.config.Config
 import net.minecraft.server.MinecraftServer
@@ -90,7 +88,7 @@ class Discord(private val config: Config) {
             return
         }
 
-        scope.launch { channel.createMessage { content = message; allowedMentions {  } } }
+        channel.createMessage { content = message; allowedMentions {  } }
     }
 
     suspend fun setPresence(activity: Config.Activity) {
