@@ -1,13 +1,8 @@
 package net.kings_world.discord_bridge.discord
 
-import dev.kord.common.entity.optional.Optional.Missing
 import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.core.entity.Message
 import dev.kord.core.entity.effectiveName
-import kotlinx.coroutines.runBlocking
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Text
 
 // message formatters converted from typescript
 // https://github.com/Kings-World/fabric-microservice/blob/main/discord-bot/src/lib/format.ts
@@ -32,8 +27,8 @@ object Formatters {
 
     @JvmStatic
     suspend fun formatReference(message: Message): String {
-        val reference = message.referencedMessage ?: return "unknown";
-        return formatAuthor(reference);
+        val reference = message.referencedMessage ?: return "unknown"
+        return formatAuthor(reference)
     }
 
     @JvmStatic
@@ -64,7 +59,7 @@ object Formatters {
         var formattedMessage = content
 
         message.mentionedUsers.collect { user ->
-            val member = message.getGuildOrNull()?.getMemberOrNull(user.id);
+            val member = message.getGuildOrNull()?.getMemberOrNull(user.id)
             formattedMessage = formattedMessage.replace(Regex("<@!?${user.id}>"), "@${member?.effectiveName ?: user.effectiveName}")
         }
 
@@ -76,20 +71,20 @@ object Formatters {
             formattedMessage = formattedMessage.replace(Regex("<#${channel.id}>"), "#${channel.data.name.coerceToMissing().value ?: "unknown"}")
         }
 
-        return formattedMessage;
+        return formattedMessage
     }
 
     @JvmStatic
     fun formatMarkdown(content: String): String {
         // credits to https://github.com/cindyaddoil/Regex-Tuesday-Challenge#challenge-4
         return content
-            .replace(Regex("""(^|[^\*])\*{3}([^\*]+.?[^\*])\*{3}(?=[^\*]|$)""")) {
+            .replace(Regex("""(^|[^*])\*{3}([^*]+.?[^*])\*{3}(?=[^*]|$)""")) {
                 "${it.groupValues[1]}§l§o${it.groupValues[2]}§r§7" // bold and italic
             }
-            .replace(Regex("""(^|[^\*])\*{2}([^\*]+.?[^\*])\*{2}(?=[^\*]|$)""")) {
+            .replace(Regex("""(^|[^*])\*{2}([^*]+.?[^*])\*{2}(?=[^*]|$)""")) {
                 "${it.groupValues[1]}§l${it.groupValues[2]}§r§7" // bold
             }
-            .replace(Regex("""(^|[^\*])\*([^\*]+.?[^\*])\*(?=[^\*]|$)""")) {
+            .replace(Regex("""(^|[^*])\*([^*]+.?[^*])\*(?=[^*]|$)""")) {
                 "${it.groupValues[1]}§o${it.groupValues[2]}§r§7" // italic
             }
             .replace(Regex("""(^|[^_])_{2}([^_].+?[^_])_{2}(?=[^_]|$)""")) {

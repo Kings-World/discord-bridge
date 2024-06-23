@@ -11,7 +11,6 @@ import net.kings_world.discord_bridge.discord.Discord
 import net.kings_world.discord_bridge.discord.Formatters
 import net.kings_world.discord_bridge.minecraft.MinecraftCommands
 import net.minecraft.server.MinecraftServer
-import net.minecraft.text.MutableText
 import net.minecraft.text.Text
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +22,7 @@ object DiscordBridge : ModInitializer {
     val configFolder: Path = FabricLoader.getInstance().configDir.resolve(MOD_ID)
     // val scope = CoroutineScope(Job() + Dispatchers.Default) // SupervisorJob
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    
+
     private fun stringReplace(string: String, keys: Map<String, Any>): String {
         var result = string
         keys.forEach { (k, v) -> result = result.replace("{$k}", v.toString()) }
