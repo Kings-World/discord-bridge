@@ -70,7 +70,7 @@ class Discord(private val config: Config) {
     }
 
     suspend fun shutdown() {
-        if (bot == null) return;
+        if (bot == null) return
         logger.info("Closing connection to Discord")
         bot!!.shutdown()
         bot = null
