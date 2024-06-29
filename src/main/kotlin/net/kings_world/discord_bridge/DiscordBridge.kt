@@ -21,7 +21,12 @@ object DiscordBridge : ModInitializer {
     val logger: Logger = LoggerFactory.getLogger(MOD_ID)
     val configFolder: Path = FabricLoader.getInstance().configDir.resolve(MOD_ID)
     // val scope = CoroutineScope(Job() + Dispatchers.Default) // SupervisorJob
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    @OptIn(DelicateCoroutinesApi::class)
+    val poolContext = newFixedThreadPoolContext(
+        Runtime.getRuntime().availableProcessors().coerceAtLeast(2),
+        "DiscordBridge-worker"
+    )
+    val scope = CoroutineScope(SupervisorJob() + poolContext)
 
     private fun stringReplace(string: String, keys: Map<String, Any>): String {
         var result = string

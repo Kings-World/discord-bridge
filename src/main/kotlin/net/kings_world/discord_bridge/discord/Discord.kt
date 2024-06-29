@@ -16,6 +16,7 @@ import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.message.allowedMentions
 import dev.kord.rest.builder.message.create.WebhookMessageCreateBuilder
+import net.kings_world.discord_bridge.DiscordBridge
 import net.kings_world.discord_bridge.DiscordBridge.logger
 import net.kings_world.discord_bridge.DiscordBridgeEvents
 import net.kings_world.discord_bridge.config.Config
@@ -29,7 +30,7 @@ class Discord(private val config: Config) {
         if (config.discordToken.isBlank()) return
 
         logger.info("Initializing the Discord bot")
-        val kord = Kord(config.discordToken)
+        val kord = Kord(config.discordToken) { defaultDispatcher = DiscordBridge.poolContext }
         bot = kord
 
         kord.on<ReadyEvent> {
@@ -69,8 +70,9 @@ class Discord(private val config: Config) {
     }
 
     suspend fun shutdown() {
-        if (bot != null) logger.info("Closing connection to Discord")
-        bot?.shutdown()
+        if (bot == null) return;
+        logger.info("Closing connection to Discord")
+        bot!!.shutdown()
         bot = null
     }
 
