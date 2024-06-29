@@ -17,6 +17,14 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
+configurations {
+    transitiveInclude {
+        exclude group: "com.mojang"
+        exclude group: "org.jetbrains.kotlin"
+        exclude group: "org.jetbrains.kotlinx"
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:$minecraft_version"
     mappings "net.fabricmc:yarn:$yarn_mappings:v2"
@@ -27,42 +35,49 @@ dependencies {
     modImplementation "me.lucko:fabric-permissions-api:$fabric_permissions_api_version"
 
     implementation include("org.bspfsystems:yamlconfiguration:$yaml_config_version")
-    implementation include("dev.kord:kord-core:$kord_version")
+    implementation transitiveInclude("dev.kord:kord-core:$kord_version")
 
     // Kord JVM
-    include "dev.kord.cache:cache-api-jvm:$kord_cache_version"
-    include "dev.kord.cache:cache-map-jvm:$kord_cache_version"
-    include "dev.kord:kord-common-jvm:$kord_version"
-    include "dev.kord:kord-core-jvm:$kord_version"
-    include "dev.kord:kord-gateway-jvm:$kord_version"
-    include "dev.kord:kord-rest-jvm:$kord_version"
+//    include "dev.kord.cache:cache-api-jvm:$kord_cache_version"
+//    include "dev.kord.cache:cache-map-jvm:$kord_cache_version"
+//    include "dev.kord:kord-common-jvm:$kord_version"
+//    include "dev.kord:kord-core-jvm:$kord_version"
+//    include "dev.kord:kord-gateway-jvm:$kord_version"
+//    include "dev.kord:kord-rest-jvm:$kord_version"
 
     // Ktor JVM (needed by Kord)
-    include "io.ktor:ktor-client-cio-jvm:$ktor_version"
-    include "io.ktor:ktor-client-content-negotiation-jvm:$ktor_version"
-    include "io.ktor:ktor-client-core-jvm:$ktor_version"
+//    include "io.ktor:ktor-client-cio-jvm:$ktor_version"
+//    include "io.ktor:ktor-client-content-negotiation-jvm:$ktor_version"
+//    include "io.ktor:ktor-client-core-jvm:$ktor_version"
     //    include "io.ktor:ktor-client-websockets-jvm:$ktor_version" // not needed so far
-    include "io.ktor:ktor-events-jvm:$ktor_version"
-    include "io.ktor:ktor-http-cio-jvm:$ktor_version"
-    include "io.ktor:ktor-http-jvm:$ktor_version"
-    include "io.ktor:ktor-io-jvm:$ktor_version"
-    include "io.ktor:ktor-network-jvm:$ktor_version"
-    include "io.ktor:ktor-network-tls-jvm:$ktor_version"
-    include "io.ktor:ktor-serialization-jvm:$ktor_version"
-    include "io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version"
-    include "io.ktor:ktor-serialization-kotlinx-jvm:$ktor_version"
-    include "io.ktor:ktor-utils-jvm:$ktor_version"
+//    include "io.ktor:ktor-events-jvm:$ktor_version"
+//    include "io.ktor:ktor-http-cio-jvm:$ktor_version"
+//    include "io.ktor:ktor-http-jvm:$ktor_version"
+//    include "io.ktor:ktor-io-jvm:$ktor_version"
+//    include "io.ktor:ktor-network-jvm:$ktor_version"
+//    include "io.ktor:ktor-network-tls-jvm:$ktor_version"
+//    include "io.ktor:ktor-serialization-jvm:$ktor_version"
+//    include "io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version"
+//    include "io.ktor:ktor-serialization-kotlinx-jvm:$ktor_version"
+//    include "io.ktor:ktor-utils-jvm:$ktor_version"
     //    include "io.ktor:ktor-websocket-serialization-jvm:$ktor_version" // not needed so far
-    include "io.ktor:ktor-websockets-jvm:$ktor_version"
+//    include "io.ktor:ktor-websockets-jvm:$ktor_version"
 
     // Kotlin Logging JVM (mu.KotlinLogging) needed by Kord Rest
-    include "io.github.oshai:kotlin-logging-jvm:${project.kotlin_logging_version}"
-    include "io.github.microutils:kotlin-logging-jvm:${project.mu_logging_version}"
+//    include "io.github.oshai:kotlin-logging-jvm:${project.kotlin_logging_version}"
+//    include "io.github.microutils:kotlin-logging-jvm:${project.mu_logging_version}"
 
     // Stately JVM (needed by Kord Cache)
     //    include "co.touchlab:stately-concurrency-jvm:$stately_version" // not needed so far
-    include "co.touchlab:stately-concurrent-collections-jvm:$stately_version"
+//    include "co.touchlab:stately-concurrent-collections-jvm:$stately_version"
     //    include "co.touchlab:stately-strict-jvm:$stately_version" // not needed so far
+}
+
+afterEvaluate {
+    configurations.transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach {
+        println("Resolved artifact: ${it}")
+        dependencies.include(it.moduleVersion.id.toString())
+    }
 }
 
 base {
