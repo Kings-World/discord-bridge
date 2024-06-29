@@ -1,7 +1,6 @@
 package net.kings_world.discord_bridge.minecraft
 
-import com.mojang.brigadier.arguments.StringArgumentType.getString
-import com.mojang.brigadier.arguments.StringArgumentType.greedyString
+import com.mojang.brigadier.arguments.StringArgumentType.*
 import com.mojang.brigadier.context.CommandContext
 import kotlinx.coroutines.*
 import me.lucko.fabric.api.permissions.v0.Permissions
@@ -34,6 +33,12 @@ object MinecraftCommands {
             }
         }
 
+        if (changes.presence && !changes.discordToken) {
+            DiscordBridge.logger.info("Presence has been changed, updating...")
+            DiscordBridge.scope.launch { discord.setPresence(config.startedActivity) }
+        }
+
+        DiscordBridge.logger.info("The config has reloaded and made the necessary changes")
         return 1
     }
 

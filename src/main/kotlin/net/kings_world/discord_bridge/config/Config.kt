@@ -16,13 +16,17 @@ class Config(file: String) {
 
         val oldDiscordToken = discordToken
         val oldWebhookUrl = webhookUrl
+        val oldPresence = startedActivity
 
         yaml.load()
 //        if (webhookUrl != oldWebhookUrl) parseWebhookUrl()
 
         return ConfigChanges(
             discordToken = discordToken != oldDiscordToken,
-            webhookUrl = webhookUrl != oldWebhookUrl
+            webhookUrl = webhookUrl != oldWebhookUrl,
+            presence = oldPresence.name != startingActivity.name
+                || oldPresence.status != startingActivity.status
+                || oldPresence.type != startingActivity.type
         )
     }
 
@@ -121,7 +125,8 @@ class Config(file: String) {
 
     data class ConfigChanges (
         val discordToken: Boolean,
-        val webhookUrl: Boolean
+        val webhookUrl: Boolean,
+        val presence: Boolean
     )
 
     inner class Message(id: String, def: String) {
