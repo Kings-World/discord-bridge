@@ -34,3 +34,29 @@ jobs:
 
       - name: Build Project
         run: ./gradlew build --stacktrace --info
+
+      - name: Extract Files
+        id: files
+        run: |
+           files=($(find build/libs -maxdepth 1 -type f -name "discord-bridge-*.jar"))
+           echo "file1=$(basename "${files[0]}")" >> "$GITHUB_OUTPUT"
+           echo "file2=$(basename "${files[1]}")" >> "$GITHUB_OUTPUT"
+           echo "file3=$(basename "${files[2]}")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload ${{ steps.files.outputs.file1 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.files.outputs.file1 }}
+          path: build/libs/${{ steps.files.outputs.file1 }}
+
+      - name: Upload ${{ steps.files.outputs.file2 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.files.outputs.file2 }}
+          path: build/libs/${{ steps.files.outputs.file2 }}
+
+      - name: Upload ${{ steps.files.outputs.file3 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.files.outputs.file3 }}
+          path: build/libs/${{ steps.files.outputs.file3 }}
