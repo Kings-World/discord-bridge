@@ -22,7 +22,7 @@ object Formatters {
 
     @JvmStatic
     suspend fun formatAuthor(message: Message): String {
-        if (message.webhookId != null) return message.interaction?.getUserOrNull()?.effectiveName ?: message.data.author.username;
+        if (message.webhookId != null) return message.interaction?.getUserOrNull()?.effectiveName ?: message.data.author.username
         return message.getAuthorAsMemberOrNull()?.effectiveName ?: message.author?.effectiveName ?: "unknown author"
     }
 
