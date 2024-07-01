@@ -4,7 +4,6 @@ import dev.kord.core.entity.Message;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.advancement.AdvancementDisplay;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -51,7 +50,7 @@ public final class DiscordBridgeEvents {
 
     @FunctionalInterface
     public interface PlayerDeath {
-        void onPlayerDeath(LivingEntity entity, Text reason);
+        void onPlayerDeath(ServerPlayerEntity entity, Text reason);
     }
 
     @FunctionalInterface

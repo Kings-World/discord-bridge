@@ -3,6 +3,7 @@ package net.kings_world.discord_bridge.mixins;
 import net.kings_world.discord_bridge.DiscordBridgeEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTracker;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +20,8 @@ public class DamageTrackerMixin {
 
     @Inject(at = @At(value = "RETURN"), method = "getDeathMessage")
     private void onGetDeathMessage(CallbackInfoReturnable<Text> cir) {
-        DiscordBridgeEvents.PLAYER_DEATH.invoker().onPlayerDeath(entity, cir.getReturnValue());
+        if (entity instanceof ServerPlayerEntity player) {
+            DiscordBridgeEvents.PLAYER_DEATH.invoker().onPlayerDeath(player, cir.getReturnValue());
+        }
     }
 }
