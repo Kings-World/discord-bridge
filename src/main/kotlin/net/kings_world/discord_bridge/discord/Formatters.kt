@@ -22,12 +22,13 @@ object Formatters {
 
     @JvmStatic
     suspend fun formatAuthor(message: Message): String {
-        return message.getAuthorAsMemberOrNull()?.effectiveName ?: message.author?.effectiveName ?: "unknown"
+        if (message.webhookId != null) return message.interaction?.getUserOrNull()?.effectiveName ?: message.data.author.username;
+        return message.getAuthorAsMemberOrNull()?.effectiveName ?: message.author?.effectiveName ?: "unknown author"
     }
 
     @JvmStatic
     suspend fun formatReference(message: Message): String {
-        val reference = message.referencedMessage ?: return "unknown"
+        val reference = message.referencedMessage ?: return "unknown reference"
         return formatAuthor(reference)
     }
 

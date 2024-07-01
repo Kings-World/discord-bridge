@@ -16,7 +16,6 @@ import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.message.allowedMentions
 import dev.kord.rest.builder.message.create.WebhookMessageCreateBuilder
-import net.kings_world.discord_bridge.DiscordBridge
 import net.kings_world.discord_bridge.DiscordBridge.logger
 import net.kings_world.discord_bridge.DiscordBridgeEvents
 import net.kings_world.discord_bridge.config.Config
