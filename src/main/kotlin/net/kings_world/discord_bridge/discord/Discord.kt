@@ -30,7 +30,7 @@ class Discord(private val config: Config) {
         if (config.discordToken.isBlank()) return
 
         logger.info("Initializing the Discord bot")
-        val kord = Kord(config.discordToken) { defaultDispatcher = DiscordBridge.poolContext }
+        val kord = Kord(config.discordToken)
         bot = kord
 
         kord.on<ReadyEvent> {
