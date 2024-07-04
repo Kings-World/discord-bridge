@@ -2,6 +2,7 @@ package net.kings_world.discord_bridge
 
 import dev.kord.rest.builder.message.allowedMentions
 import kotlinx.coroutines.*
+import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents
@@ -16,7 +17,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
-object DiscordBridge : ModInitializer {
+object DiscordBridge : DedicatedServerModInitializer {
     const val MOD_ID = "discord-bridge"
     val logger: Logger = LoggerFactory.getLogger(MOD_ID)
     val configFolder: Path = FabricLoader.getInstance().configDir.resolve(MOD_ID)
@@ -29,7 +30,8 @@ object DiscordBridge : ModInitializer {
         return result
     }
 
-    override fun onInitialize() {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onInitializeServer() {
         logger.info("_  _ _ _  _ ____ ____    _ _ _ ____ ____ _    ___  ")
         logger.info("|_/  | |\\ | | __ [__     | | | |  | |__/ |    |  \\ ")
         logger.info("| \\_ | | \\| |__] ___]    |_|_| |__| |  \\ |___ |__/ ")
@@ -42,7 +44,8 @@ object DiscordBridge : ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register {
             server = it
-            scope.launch { discord.init(it) }
+//            scope.launch { discord.init(it) }
+            GlobalScope.launch { discord.init(it) } // kord should be kept alive until the server shuts down
         }
 
         ServerLifecycleEvents.SERVER_STARTED.register {

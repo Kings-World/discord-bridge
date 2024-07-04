@@ -15,7 +15,7 @@
     "environment": "server",
     "mixins": ["discord-bridge.mixins.json"],
     "entrypoints": {
-        "main": [{
+        "server": [{
             "adapter": "kotlin",
             "value": "net.kings_world.discord_bridge.DiscordBridge"
         }]
