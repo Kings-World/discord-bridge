@@ -21,10 +21,10 @@ public abstract class PlayerAdvancementTrackerMixin {
     private void onAdvancementBroadcast(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
         AdvancementDisplay display = advancement.getDisplay();
         if (display == null) {
-            DiscordBridge.INSTANCE.getLogger().warn("Advancement " + advancement.getId().toString() + " has no display!");
+            DiscordBridge.INSTANCE.getLogger().warn("Advancement {} has no display!", advancement.getId().toString());
             return;
         }
-        DiscordBridge.INSTANCE.getLogger().info(owner.getName().getString() + " unlocked " + display.getTitle().getString());
+        DiscordBridge.INSTANCE.getLogger().info("{} unlocked {}", owner.getName().getString(), display.getTitle().getString());
         DiscordBridgeEvents.PLAYER_ADVANCEMENT.invoker().onPlayerAdvancement(owner, display);
     }
 }

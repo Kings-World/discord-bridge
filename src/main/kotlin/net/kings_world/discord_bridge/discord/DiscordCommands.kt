@@ -10,14 +10,14 @@ import dev.kord.core.event.interaction.AutoCompleteInteractionCreateEvent
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.interaction.string
-import net.kings_world.discord_bridge.DiscordBridge
+import net.kings_world.discord_bridge.DiscordBridge.logger
 import net.minecraft.server.MinecraftServer
 import net.minecraft.text.Text
 
 object DiscordCommands {
     private suspend fun list(interaction: ChatInputCommandInteraction, server: MinecraftServer) {
         val players = server.playerManager.playerList.map {
-            "- ${it.name.string} ${it.pingMilliseconds} ms)"
+            "- ${it.name.string} (${it.pingMilliseconds} ms)"
         }
 
         val plural = if (players.size == 1) "" else "s"
@@ -51,7 +51,7 @@ object DiscordCommands {
     }
 
     suspend fun registerCommands(kord: Kord) {
-        DiscordBridge.logger.info("Registering slash commands")
+        logger.info("Registering slash commands")
 
         kord.createGlobalChatInputCommand("list", "List all players on the server")
         kord.createGlobalChatInputCommand("message", "Send a message to a player on the server") {
@@ -66,7 +66,7 @@ object DiscordCommands {
     }
 
     suspend fun registerEvents(kord: Kord, server: MinecraftServer) {
-        DiscordBridge.logger.info("Loading interaction events")
+        logger.info("Loading interaction events")
 
         kord.on<AutoCompleteInteractionCreateEvent> {
             val focused = interaction.focusedOption.value

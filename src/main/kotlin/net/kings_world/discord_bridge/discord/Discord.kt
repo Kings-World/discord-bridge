@@ -1,5 +1,6 @@
 package net.kings_world.discord_bridge.discord
 
+import com.github.shynixn.mccoroutine.fabric.launch
 import dev.kord.common.annotation.KordExperimental
 import dev.kord.common.annotation.KordUnsafe
 import dev.kord.common.entity.PresenceStatus
@@ -16,6 +17,7 @@ import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.message.allowedMentions
 import dev.kord.rest.builder.message.create.WebhookMessageCreateBuilder
+import net.kings_world.discord_bridge.DiscordBridge
 import net.kings_world.discord_bridge.DiscordBridge.logger
 import net.kings_world.discord_bridge.DiscordBridgeEvents
 import net.kings_world.discord_bridge.config.Config
@@ -29,7 +31,7 @@ class Discord(private val config: Config) {
         if (config.discordToken.isBlank()) return
 
         logger.info("Initializing the Discord bot")
-        val kord = Kord(config.discordToken)
+        val kord = Kord(config.discordToken) { enableShutdownHook = false }
         bot = kord
 
         kord.on<ReadyEvent> {
@@ -71,13 +73,16 @@ class Discord(private val config: Config) {
     suspend fun shutdown() {
         if (bot == null) return
         logger.info("Closing connection to Discord")
+        bot!!.logout()
         bot!!.shutdown()
         bot = null
     }
 
-    suspend fun sendWebhook(builder: WebhookMessageCreateBuilder.() -> Unit) {
+    fun sendWebhook(builder: WebhookMessageCreateBuilder.() -> Unit) {
         if (bot == null || config.webhookId == null || config.webhookToken == null) return
-        bot!!.unsafe.webhook(Snowflake(config.webhookId!!)).execute(config.webhookToken!!, null, builder)
+        DiscordBridge.launch {
+            bot!!.unsafe.webhook(Snowflake(config.webhookId!!)).execute(config.webhookToken!!, null, builder)
+        }
     }
 
     suspend fun sendMessage(message: String) {
@@ -90,6 +95,11 @@ class Discord(private val config: Config) {
         }
 
         channel.createMessage { content = message; allowedMentions {  } }
+    }
+
+    suspend fun sendConfigMessage(message: Config.Message) {
+        if (!message.enabled) return
+        sendMessage(message.content)
     }
 
     suspend fun setPresence(activity: Config.Activity) {
