@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.9.24"
+    id "org.jetbrains.kotlin.jvm" version "1.9.25"
     id "fabric-loom" version "1.7-SNAPSHOT"
     id "io.github.p03w.machete" version "2.0.1"
 }
