@@ -26,8 +26,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version"
     modImplementation "me.lucko:fabric-permissions-api:$fabric_permissions_api_version"
 
-    implementation include("com.github.shynixn.mccoroutine:mccoroutine-fabric-api:2.18.0")
-    implementation include("com.github.shynixn.mccoroutine:mccoroutine-fabric-core:2.18.0")
+    implementation include("com.github.shynixn.mccoroutine:mccoroutine-fabric-api:2.19.0")
+    implementation include("com.github.shynixn.mccoroutine:mccoroutine-fabric-core:2.19.0")
 
     implementation include("org.bspfsystems:yamlconfiguration:$yaml_config_version")
     implementation include("dev.kord:kord-core:$kord_version")
