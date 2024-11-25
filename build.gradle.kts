@@ -33,6 +33,9 @@ dependencies {
     include(implementation("org.bspfsystems:yamlconfiguration:${property("yaml_config_version")}")!!)
     include(implementation("dev.kord:kord-core:${property("kord_version")}")!!)
 
+    // needed by YamlConfiguration
+    include("org.yaml:snakeyaml:2.3")
+
     // Kord JVM
     include("dev.kord.cache:cache-api-jvm:${property("kord_cache_version")}")
     include("dev.kord.cache:cache-map-jvm:${property("kord_cache_version")}")
