@@ -79,19 +79,19 @@ base {
 }
 
 tasks.processResources {
-    inputs.property("version", property("version"))
+    inputs.property("version", project.version)
 
     filesMatching("fabric.mod.json") {
         expand(mutableMapOf(
-            "version" to property("version"),
-            "minecraft_version" to property("minecraft_version"),
-            "fabric_kotlin_version" to property("fabric_kotlin_version")
+            "version" to project.version,
+            "minecraft_version" to project.extra["minecraft_version"],
+            "fabric_kotlin_version" to project.extra["fabric_kotlin_version"]
         ))
     }
 
     filesMatching("config.yml") {
         filter<ReplaceTokens>("beginToken" to "\${", "endToken" to "}", "tokens" to mapOf(
-            "version" to property("version")
+            "version" to project.version
         ))
     }
 }
