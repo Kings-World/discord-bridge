@@ -6,8 +6,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.kings_world.discord_bridge.DiscordBridge
 import net.kings_world.discord_bridge.DiscordBridge.config
-import net.kings_world.discord_bridge.DiscordBridge.discord
 import net.kings_world.discord_bridge.Utils.requirePermission
+import net.kings_world.discord_bridge.discord.Discord
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
@@ -28,13 +28,12 @@ class ReloadCommand : SuspendingCommand<ServerCommandSource> {
 
         if (changes.discordToken) {
             sendFeedback(context, "Discord token has been changed, making changes...")
-            discord.shutdown()
-            discord.init(context.source.server, true)
+            Discord.prepare(config.startedActivity)
         }
 
         if (changes.presence && !changes.discordToken) {
             sendFeedback(context, "Presence has been changed, updating...")
-            discord.setPresence(config.startedActivity)
+            Discord.setPresence(config.startedActivity)
         }
 
         sendFeedback(context, "The config has reloaded and made the necessary changes")

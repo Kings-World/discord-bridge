@@ -7,8 +7,8 @@ import com.mojang.brigadier.arguments.StringArgumentType.greedyString
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.kings_world.discord_bridge.DiscordBridge
-import net.kings_world.discord_bridge.DiscordBridge.discord
 import net.kings_world.discord_bridge.Utils.requirePermission
+import net.kings_world.discord_bridge.discord.Discord
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
@@ -21,7 +21,7 @@ class SendCommand : SuspendingCommand<ServerCommandSource> {
 
     override suspend fun run(context: CommandContext<ServerCommandSource>): Int {
         context.source.sendFeedback({ Text.of("Sending your message to Discord") }, true)
-        discord.sendMessage(getString(context, "message"))
+        Discord.sendMessage(getString(context, "message"))
         return 1
     }
 }

@@ -27,14 +27,15 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
     modImplementation("me.lucko:fabric-permissions-api:${property("fabric_permissions_api_version")}")
 
-    include(implementation("com.github.shynixn.mccoroutine:mccoroutine-fabric-api:2.20.0")!!)
-    include(implementation("com.github.shynixn.mccoroutine:mccoroutine-fabric-core:2.20.0")!!)
+    include(implementation("com.github.shynixn.mccoroutine:mccoroutine-fabric-api:${property("mccoroutine_version")}")!!)
+    include(implementation("com.github.shynixn.mccoroutine:mccoroutine-fabric-core:${property("mccoroutine_version")}")!!)
 
     include(implementation("org.bspfsystems:yamlconfiguration:${property("yaml_config_version")}")!!)
     include(implementation("dev.kord:kord-core:${property("kord_version")}")!!)
+    include(implementation("io.ktor:ktor-client-java-jvm:${property("ktor_version")}")!!)
 
     // needed by YamlConfiguration
-    include("org.yaml:snakeyaml:2.3")
+    include("org.yaml:snakeyaml:${property("snakeyaml_version")}")
 
     // Kord JVM
     include("dev.kord.cache:cache-api-jvm:${property("kord_cache_version")}")
@@ -49,7 +50,7 @@ dependencies {
     include("io.ktor:ktor-client-content-negotiation-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-client-core-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-client-okhttp-jvm:${property("ktor_version")}")
-    //    include("io.ktor:ktor-client-websockets-jvm:${property("ktor_version")}")
+    /* not needed? */    include("io.ktor:ktor-client-websockets-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-events-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-http-cio-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-http-jvm:${property("ktor_version")}")
@@ -60,7 +61,7 @@ dependencies {
     include("io.ktor:ktor-serialization-kotlinx-json-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-serialization-kotlinx-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-utils-jvm:${property("ktor_version")}")
-    //    include("io.ktor:ktor-websocket-serialization-jvm:${property("ktor_version")}")
+    /* not needed? */    include("io.ktor:ktor-websocket-serialization-jvm:${property("ktor_version")}")
     include("io.ktor:ktor-websockets-jvm:${property("ktor_version")}")
 
     // Kotlin Logging JVM (mu.KotlinLogging) needed by Kord Rest
@@ -72,9 +73,9 @@ dependencies {
     include("com.squareup.okio:okio:${property("okio_version")}")
 
     // Stately JVM (needed by Kord Cache)
-    //    include("co.touchlab:stately-concurrency-jvm:${property("stately_version")}")
+    /* not needed? */    include("co.touchlab:stately-concurrency-jvm:${property("stately_version")}")
     include("co.touchlab:stately-concurrent-collections-jvm:${property("stately_version")}")
-    //    include("co.touchlab:stately-strict-jvm:${property("stately_version")}")
+    /* not needed? */    include("co.touchlab:stately-strict-jvm:${property("stately_version")}")
 }
 
 base {

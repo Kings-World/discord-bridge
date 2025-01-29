@@ -2,20 +2,21 @@ package net.kings_world.discord_bridge.discord
 
 import dev.kord.common.entity.Choice
 import dev.kord.common.entity.optional.Optional
-import dev.kord.core.Kord
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.behavior.interaction.suggest
+import dev.kord.core.entity.effectiveName
 import dev.kord.core.entity.interaction.ChatInputCommandInteraction
 import dev.kord.core.event.interaction.AutoCompleteInteractionCreateEvent
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.interaction.string
 import net.kings_world.discord_bridge.DiscordBridge.logger
-import net.minecraft.server.MinecraftServer
+import net.kings_world.discord_bridge.DiscordBridge.server
+import net.kings_world.discord_bridge.discord.Discord.kord
 import net.minecraft.text.Text
 
 object DiscordCommands {
-    private suspend fun list(interaction: ChatInputCommandInteraction, server: MinecraftServer) {
+    private suspend fun list(interaction: ChatInputCommandInteraction,) {
         val players = server.playerManager.playerList.map {
             "- ${it.name.string} (${it.pingMilliseconds} ms)"
         }
@@ -31,7 +32,7 @@ object DiscordCommands {
         }
     }
 
-    private suspend fun message(interaction: ChatInputCommandInteraction, server: MinecraftServer) {
+    private suspend fun message(interaction: ChatInputCommandInteraction) {
         val playerName = interaction.command.strings.getValue("player")
         val message = interaction.command.strings.getValue("content")
 
@@ -50,23 +51,25 @@ object DiscordCommands {
         interaction.respondEphemeral { content = "Message sent to ${player.name.string}" }
     }
 
-    suspend fun registerCommands(kord: Kord) {
+    suspend fun registerCommands() {
         logger.info("Registering slash commands")
 
-        kord.createGlobalChatInputCommand("list", "List all players on the server")
-        kord.createGlobalChatInputCommand("message", "Send a message to a player on the server") {
-            string("player", "The player to send the message to") {
-                required = true
-                autocomplete = true
-            }
-            string("content", "The content of the message") {
-                required = true
+        kord.createGlobalApplicationCommands {
+            input("list", "List all players on the server")
+            input("message", "Send a message to a player on the server") {
+                string("player", "The player to send the message to") {
+                    required = true
+                    autocomplete = true
+                }
+                string("content", "The content of the message") {
+                    required = true
+                }
             }
         }
     }
 
-    suspend fun registerEvents(kord: Kord, server: MinecraftServer) {
-        logger.info("Loading interaction events")
+    fun registerInteractionEvents() {
+        logger.info("Registering interaction events")
 
         kord.on<AutoCompleteInteractionCreateEvent> {
             val focused = interaction.focusedOption.value
@@ -78,9 +81,10 @@ object DiscordCommands {
         }
 
         kord.on<ChatInputCommandInteractionCreateEvent> {
+            logger.info("${interaction.user.effectiveName} executed the /${interaction.invokedCommandName} command")
             when (interaction.invokedCommandName) {
-                "list" -> list(interaction, server)
-                "message" -> message(interaction, server)
+                "list" -> list(interaction)
+                "message" -> message(interaction)
             }
         }
     }

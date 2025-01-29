@@ -1,13 +1,10 @@
 package net.kings_world.discord_bridge.discord
 
-import com.github.shynixn.mccoroutine.fabric.launch
-import dev.kord.common.annotation.KordExperimental
-import dev.kord.common.annotation.KordUnsafe
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
-import dev.kord.core.behavior.execute
+import dev.kord.core.behavior.executeIgnored
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.entity.effectiveName
 import dev.kord.core.event.gateway.ReadyEvent
@@ -17,26 +14,35 @@ import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.rest.builder.message.allowedMentions
 import dev.kord.rest.builder.message.create.WebhookMessageCreateBuilder
-import net.kings_world.discord_bridge.DiscordBridge
 import net.kings_world.discord_bridge.DiscordBridge.logger
 import net.kings_world.discord_bridge.DiscordBridgeEvents
 import net.kings_world.discord_bridge.config.Config
-import net.minecraft.server.MinecraftServer
+import net.kings_world.discord_bridge.DiscordBridge.config
 
-@OptIn(KordUnsafe::class, KordExperimental::class)
-class Discord(private val config: Config) {
-    private var bot: Kord? = null
+object Discord {
+    lateinit var kord: Kord
 
-    suspend fun init(server: MinecraftServer, reloaded: Boolean = false) {
-        if (config.discordToken.isBlank()) return
+    private suspend fun init() {
+        if (config.discordToken.isBlank()) {
+            logger.warn("Discord token is not set! The bot will not be initialized.")
+            return
+        }
 
         logger.info("Initializing the Discord bot")
-        val kord = Kord(config.discordToken) { enableShutdownHook = false }
-        bot = kord
+        kord = Kord(config.discordToken)
+    }
+
+    private fun registerEvents() {
+        if (::kord.isInitialized.not()) {
+            logger.warn("Discord bot is not initialized! Events will not be registered.")
+            return
+        }
+
+        logger.info("Registering Discord events")
 
         kord.on<ReadyEvent> {
             logger.info("Logged into Discord as ${self.effectiveName}")
-            DiscordCommands.registerCommands(kord)
+            DiscordCommands.registerCommands()
         }
 
         kord.on<MessageCreateEvent> {
@@ -46,10 +52,16 @@ class Discord(private val config: Config) {
             DiscordBridgeEvents.DISCORD_MESSAGE.invoker().onDiscordMessage(message)
         }
 
-        DiscordCommands.registerEvents(kord, server)
+        DiscordCommands.registerInteractionEvents()
+    }
+
+    private suspend fun login(activity: Config.Activity) {
+        if (::kord.isInitialized.not()) {
+            logger.warn("Discord bot is not initialized! The bot will not be started.")
+            return
+        }
 
         logger.info("Logging into Discord")
-        val presence = if (reloaded) config.startedActivity else config.startingActivity
 
         kord.login {
             intents {
@@ -58,39 +70,68 @@ class Discord(private val config: Config) {
                 +Intent.GuildMessages
             }
             presence {
-                status = PresenceStatus.from(presence.status.lowercase())
-                when (presence.type.lowercase()) {
-                    "playing" -> playing(presence.name)
-                    "listening" -> listening(presence.name)
-                    "watching" -> watching(presence.name)
-                    "competing" -> competing(presence.name)
-                    "custom" -> this.state = presence.name
+                status = PresenceStatus.from(activity.status.lowercase())
+                when (activity.type.lowercase()) {
+                    "playing" -> playing(activity.name)
+                    "listening" -> listening(activity.name)
+                    "watching" -> watching(activity.name)
+                    "competing" -> competing(activity.name)
+                    "custom" -> this.state = activity.name
                 }
             }
         }
     }
 
-    suspend fun shutdown() {
-        if (bot == null) return
-        logger.info("Closing connection to Discord")
-        bot!!.logout()
-        bot!!.shutdown()
-        bot = null
+    suspend fun prepare(activity: Config.Activity) {
+        init()
+        registerEvents()
+        login(activity)
     }
 
-    fun sendWebhook(builder: WebhookMessageCreateBuilder.() -> Unit) {
-        if (bot == null || config.webhookId == null || config.webhookToken == null) return
-        DiscordBridge.launch {
-            bot!!.unsafe.webhook(Snowflake(config.webhookId!!)).execute(config.webhookToken!!, null, builder)
+    suspend fun shutdown() {
+        if (::kord.isInitialized.not()) {
+            logger.warn("Discord bot is not initialized! The bot will not be shutdown.")
+            return
         }
+
+        logger.info("Shutting down the Discord bot")
+        kord.shutdown()
+    }
+
+    suspend fun sendWebhook(builder: WebhookMessageCreateBuilder.() -> Unit) {
+        if (::kord.isInitialized.not()) {
+            logger.warn("Discord bot is not initialized! The webhook will not be sent.")
+            return
+        }
+
+        if (config.webhookId == null || config.webhookToken == null) {
+            logger.warn("Webhook ID or token is not set! The webhook will not be sent.")
+            return
+        }
+
+        val webhook = kord.getWebhookOrNull(Snowflake(config.webhookId!!))
+        if (webhook == null) {
+            logger.error("Webhook with ID ${config.webhookId} not found! The webhook will not be sent.")
+            return
+        }
+
+        webhook.executeIgnored(config.webhookToken!!, null, builder)
     }
 
     suspend fun sendMessage(message: String) {
-        if (bot == null || message.isBlank()) return
+        if (::kord.isInitialized.not()) {
+            logger.warn("Discord bot is not initialized! The message will not be sent.")
+            return
+        }
 
-        val channel = bot!!.getChannelOf<TextChannel>(Snowflake(config.channelId))
+        if (message.isBlank()) {
+            logger.warn("The message is empty! The message will not be sent.")
+            return
+        }
+
+        val channel = kord.getChannelOf<TextChannel>(Snowflake(config.channelId))
         if (channel == null) {
-            logger.error("DiscordBridge(message): The provided channel ID is invalid!")
+            logger.error("Channel with ID ${config.channelId} not found! The message will not be sent.")
             return
         }
 
@@ -102,8 +143,13 @@ class Discord(private val config: Config) {
         sendMessage(message.content)
     }
 
-    suspend fun setPresence(activity: Config.Activity) {
-        bot?.editPresence {
+    suspend fun setPresence(activity: Config.Activity)  {
+        if (::kord.isInitialized.not()) {
+            logger.warn("Discord bot is not initialized! The presence will not be set.")
+            return
+        }
+
+        kord.editPresence {
             this.status = PresenceStatus.from(activity.status.lowercase())
             when (activity.type.lowercase()) {
                 "playing" -> playing(activity.name)

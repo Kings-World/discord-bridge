@@ -2,16 +2,16 @@ package net.kings_world.discord_bridge.listeners
 
 import dev.kord.rest.builder.message.allowedMentions
 import net.kings_world.discord_bridge.DiscordBridge.config
-import net.kings_world.discord_bridge.DiscordBridge.discord
 import net.kings_world.discord_bridge.Utils.stringReplace
+import net.kings_world.discord_bridge.discord.Discord
 import net.minecraft.network.message.SignedMessage
 import net.minecraft.server.network.ServerPlayerEntity
 
 object ChatMessage {
-    fun run(message: SignedMessage, sender: ServerPlayerEntity) {
+    suspend fun run(message: SignedMessage, sender: ServerPlayerEntity) {
         if (!config.messages.chatMessage.enabled) return
 
-        discord.sendWebhook {
+        Discord.sendWebhook {
             username = sender.name.string
             avatarUrl = config.avatarUrl.replace("{uuid}", sender.uuid.toString())
             content = stringReplace(
