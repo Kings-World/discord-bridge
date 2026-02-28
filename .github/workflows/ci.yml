@@ -44,19 +44,19 @@ jobs:
            echo "file3=$(basename "${files[2]}")" >> "$GITHUB_OUTPUT"
 
       - name: Upload ${{ steps.files.outputs.file1 }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: ${{ steps.files.outputs.file1 }}
           path: build/libs/${{ steps.files.outputs.file1 }}
 
       - name: Upload ${{ steps.files.outputs.file2 }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: ${{ steps.files.outputs.file2 }}
           path: build/libs/${{ steps.files.outputs.file2 }}
 
       - name: Upload ${{ steps.files.outputs.file3 }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: ${{ steps.files.outputs.file3 }}
           path: build/libs/${{ steps.files.outputs.file3 }}
